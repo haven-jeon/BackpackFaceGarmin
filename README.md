@@ -28,5 +28,6 @@ Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공�
 배너·숫자·이모지·한글 폰트·지명표는 `design/`의 스크립트로 만든다. [design/README.md](design/README.md) 참고.
 
 ## 라이선스
-- 폰트: 각 OFL 파일 참고 (`design/fonts/OFL-*.txt`)
-- 지명 데이터: © OpenStreetMap contributors (ODbL), Wikidata (CC0), 위키백과 (CC BY-SA)
+코드는 [MIT](LICENSE). 아래는 각자의 라이선스를 따른다.
+- 폰트(`design/fonts/`)와 갈무리에서 만든 한글 비트맵 폰트(`InstinctFace/resources/fonts/`): SIL OFL 1.1
+- 지명 데이터(`design/places/`)와 이를 변환한 지명표: © OpenStreetMap contributors (ODbL), Wikidata (CC0), 위키백과 (CC BY-SA)
