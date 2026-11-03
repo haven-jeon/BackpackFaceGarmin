@@ -22,17 +22,8 @@ Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공�
 ./build.sh InstinctFace instinct3solar45mm install # 릴리스 빌드 후 USB로 시계에 설치
 ```
 
-## 리소스 다시 만들기 (`design/`, Pillow·numpy 필요)
-생성 결과물은 `InstinctFace/resources/` 등에 커밋되어 있으므로 디자인을 바꿀 때만 실행한다.
-
-```sh
-cd design
-python gen_banner.py export   # 배너·고라니 비트맵, 시간 숫자
-python gen_emoji.py           # 이모지 아이콘
-python gen_korfont.py         # 한글 비트맵 폰트 (화면 문구를 바꾸면 다시 실행)
-python gen_places.py          # places/*.csv → 지명표 JSON, PlaceChunks.mc
-```
-`preview` 계열 명령은 `design/previews/`에 비교용 이미지를 만든다.
+## 리소스 다시 만들기
+배너·숫자·이모지·한글 폰트·지명표는 `design/`의 스크립트로 만든다. [design/README.md](design/README.md) 참고.
 
 ## 라이선스
 - 폰트: 각 OFL 파일 참고 (`design/fonts/OFL-*.txt`)

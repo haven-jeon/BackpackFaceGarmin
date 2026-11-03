@@ -6,7 +6,7 @@
   python gen_banner.py export    → ../InstinctFace/resources/ 에 배너·고라니 비트맵, 숫자 폰트 출력
   python gen_banner.py spots     → previews/deer_spots.png (고라니가 설 수 있는 자리 모음)
 
-서체: Zilla Slab Bold, Alfa Slab One (SIL OFL, fonts/ 참고)
+서체: Alfa Slab One (SIL OFL, fonts/ 참고)
 """
 import sys
 from pathlib import Path
