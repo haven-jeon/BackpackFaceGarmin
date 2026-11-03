@@ -19,16 +19,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
----------------------------------------------------------------------------
-Third-party components are NOT covered by the MIT license above:
-
-- Fonts in design/fonts/ — SIL Open Font License 1.1 (see design/fonts/OFL-*.txt)
-  - Alfa Slab One (c) 2016 The Alfa Slab One Project Authors, Reserved Font Name "Alfa Slab"
-  - Galmuri (c) 2019-2025 Lee Minseo
-  - Noto Emoji (c) 2013 Google LLC
-- InstinctFace/resources/fonts/kor.fnt, kor.png — bitmap font derived from Galmuri,
-  distributed under the SIL Open Font License 1.1.
-- design/places/*.csv and the place tables generated from them
-  (InstinctFace/resources/jsonData/, InstinctFace/source/PlaceChunks.mc):
-  (c) OpenStreetMap contributors (ODbL 1.0), Wikidata (CC0), Wikipedia (CC BY-SA 4.0).
