@@ -6,7 +6,7 @@ These components are NOT covered by the MIT license in [LICENSE](LICENSE).
   - Alfa Slab One (c) 2016 The Alfa Slab One Project Authors, Reserved Font Name "Alfa Slab"
   - Galmuri (c) 2019-2025 Lee Minseo
   - Noto Emoji (c) 2013 Google LLC
-- InstinctFace/resources/fonts/kor.fnt, kor.png — bitmap font derived from Galmuri,
+- InstinctFace/resources-176/fonts/, resources-280/fonts/ (kor.fnt, kor.png) — bitmap fonts derived from Galmuri,
   distributed under the SIL Open Font License 1.1.
 - design/places/*.csv and the place tables generated from them
   (InstinctFace/resources/jsonData/, InstinctFace/source/PlaceChunks.mc):

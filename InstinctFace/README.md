@@ -1,9 +1,16 @@
-# Backpack Face — 백패킹 워치 페이스 (Instinct 3 Solar)
+# Backpack Face — 백패킹 워치 페이스 (Instinct 3 Solar · Fenix 7X)
 
 산에서 며칠씩 폰 없이 다녀도 필요한 정보가 한눈에 들어오도록 만든 흑백 워치 페이스.
 파타고니아 로고를 오마주한 "파타고라니" 배너(산맥 + 고라니) 위에 시각을 얹었다.
 
-<img src="../docs/instinctface.png" width="352" alt="시뮬레이터 화면">
+<img src="../docs/instinctface.png" width="264" alt="Instinct 3 Solar 시뮬레이터 화면"> <img src="../docs/fenix7x.png" width="280" alt="Fenix 7X 시뮬레이터 화면">
+
+## 지원 기기
+
+| 기기 | 기기 ID | 화면 | 비고 |
+|---|---|---|---|
+| Instinct 3 Solar 45mm·50mm | `instinct3solar45mm` | 176×176 흑백, 서브스크린 | 기준 디자인 |
+| fēnix 7X / 7X Solar / 7X Sapphire Solar | `fenix7x` | 280×280 원형 | 같은 구성을 1.5배로 다시 그림. 서브스크린 자리에 원을 직접 그림 |
 
 ## 화면 구성
 
@@ -56,8 +63,10 @@ Garmin Connect 앱 → 워치 페이스 설정에서 칸마다 고른다.
 | `source/SunTimes.mc` | 위치 확보, 일출·일몰 계산 |
 | `source/Places.mc` | 위치 → 가장 가까운 지명 |
 | `source/Icons.mc` | 작은 벡터 아이콘 (산, 화살표, 해, 번개 등) |
-| `source/Banner.mc`, `PlaceChunks.mc` | **생성 파일** — 직접 고치지 말 것 |
-| `resources/settings/` | 폰 설정 화면(칸 선택)과 기본값 |
+| `source-176/`, `source-280/` | 화면별 배치: `Layout.mc`(글자·칸·서브스크린 좌표), `Banner.mc`(**생성 파일**) |
+| `source/PlaceChunks.mc` | **생성 파일** — 직접 고치지 말 것 |
+| `resources/` | 화면 공통: 폰 설정 화면(칸 선택)과 기본값, 문자열, 지명표 |
+| `resources-176/`, `resources-280/` | 화면별 비트맵(배너·숫자·고라니·이모지)과 한글 폰트 |
 
 배너·숫자·이모지·한글 폰트·지명표는 [`design/`](../design/README.md)의 스크립트로 만든다.
 
@@ -68,6 +77,8 @@ Garmin Connect 앱 → 워치 페이스 설정에서 칸마다 고른다.
 ```sh
 ./build.sh InstinctFace instinct3solar45mm run      # 시뮬레이터
 ./build.sh InstinctFace instinct3solar45mm install  # USB로 연결한 시계에 설치
+./build.sh InstinctFace fenix7x run                 # Fenix 7X 시뮬레이터
+./build.sh InstinctFace fenix7x install             # Fenix 7X에 설치
 ```
 
 시뮬레이터에서 지명·일출·일몰을 보려면 Settings → Set Position으로 위치를 넣는다.

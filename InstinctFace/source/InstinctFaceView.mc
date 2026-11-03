@@ -10,7 +10,9 @@ import Toybox.Time;
 import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 
-// 백패킹용 워치 페이스 (Instinct 3 Solar 176x176 1bpp, 우상단 서브스크린 113,0,62x62)
+// 백패킹용 워치 페이스. 그림은 Instinct 3 Solar (176x176 1bpp, 우상단 서브스크린 113,0,62x62) 기준이고,
+// Fenix 7X (280x280 원형)는 같은 구성을 1.5배로 키워 서브스크린 자리에 원을 직접 그린다.
+// 화면별 좌표는 source-176/, source-280/ 의 Layout.mc(손으로 씀)와 Banner.mc(design/gen_banner.py가 생성)
 //
 //  ┌──────────────┬─(sub)─┐
 //  │ 10월 27일 화  │ 2:10  │  ← 일몰(밤이면 일출)까지 남은 시간, 링 = 지금 태양광 충전 세기
@@ -93,7 +95,7 @@ class InstinctFaceView extends WatchUi.WatchFace {
         updateSun(now.value(), info.day);
 
         drawTopLeft(dc, info);
-        drawSubscreen(dc, w, now.value());
+        drawSubscreen(dc, now.value());
         drawBanner(dc, now.value());
         drawTime(dc, w);
         drawBottomSlots(dc, w);
@@ -104,16 +106,23 @@ class InstinctFaceView extends WatchUi.WatchFace {
     // 여기서 값을 확인하고, 그린 값과 SOLAR_STEP 이상 차이 날 때만 서브스크린을 다시 그린다.
     // 해를 향하면 링이 바로 반응하고, 값이 조금씩 출렁일 때는 그리지 않는다 (onUpdate는 절전 중 1분에 한 번뿐)
     function onPartialUpdate(dc as Dc) as Void {
-        if (_sub == null) { return; }
         var s = solarNow();
         var diff = s - _solarDrawn;
         if (diff.abs() < SOLAR_STEP && !(s == 0 && _solarDrawn > 0)) { return; }
-        dc.setClip(_sub.x, _sub.y, _sub.width, _sub.height);
+        var r = subRect();
+        dc.setClip(r[0], r[1], r[2], r[3]);
         dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_BLACK);
-        dc.fillRectangle(_sub.x, _sub.y, _sub.width, _sub.height);
+        dc.fillRectangle(r[0], r[1], r[2], r[3]);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-        drawSubscreen(dc, dc.getWidth(), Time.now().value());
+        drawSubscreen(dc, Time.now().value());
         dc.clearClip();
+    }
+
+    // 서브스크린 영역 [x, y, 폭, 높이]. 서브스크린이 없는 기기(Fenix)는 Layout의 원을 감싸는 사각형
+    hidden function subRect() as Array<Number> {
+        if (_sub != null) { return [_sub.x, _sub.y, _sub.width, _sub.height]; }
+        var r = Layout.SUB_R + 1;
+        return [Layout.SUB_CX - r, Layout.SUB_CY - r, 2 * r + 1, 2 * r + 1];
     }
 
     // 지금 태양광 충전 세기 0~100 (지원하지 않는 기기면 0)
@@ -126,23 +135,22 @@ class InstinctFaceView extends WatchUi.WatchFace {
 
     // ---- 좌상단: 날짜 + 정보 칸 3개 (top1~3) ----
     hidden function drawTopLeft(dc as Dc, info as Gregorian.Info) as Void {
-        var cx = 58;
         // FORMAT_SHORT: month 1~12, day_of_week 1(일)~7(토)
         var week = ["일", "월", "화", "수", "목", "금", "토"];
-        dc.drawText(cx, 12, _kor,
+        dc.drawText(Layout.DATE_X, Layout.DATE_Y, _kor,
             Lang.format("$1$월 $2$일 $3$", [info.month, info.day, week[(info.day_of_week as Number) - 1]]),
             Graphics.TEXT_JUSTIFY_CENTER);
-        // 줄 간격 13px. 셋째 줄 아래로는 배너 위로 튀어나온 고라니 머리(y=64~)가 있어 더 내릴 수 없다
+        // 셋째 줄 아래로는 배너 위로 튀어나온 고라니 머리가 있어 더 내릴 수 없다
         for (var i = 0; i < 3; i++) {
-            Slots.draw(dc, _kor, _slots[i], cx, 25 + 13 * i, [_rise, _set]);
+            Slots.draw(dc, _kor, _slots[i], Layout.TOP_X, Layout.TOP_Y + Layout.TOP_DY * i, [_rise, _set]);
         }
     }
 
     // ---- 서브스크린: 다음 일몰/일출까지 남은 시간 + 태양광 충전 세기 링 ----
-    hidden function drawSubscreen(dc as Dc, w as Number, now as Number) as Void {
-        var cx = (_sub != null) ? _sub.x + _sub.width / 2 : w - 32;
-        var cy = (_sub != null) ? _sub.y + _sub.height / 2 : 32;
-        var r = (_sub != null) ? _sub.width / 2 - 2 : 29;
+    hidden function drawSubscreen(dc as Dc, now as Number) as Void {
+        var cx = (_sub != null) ? _sub.x + _sub.width / 2 : Layout.SUB_CX;
+        var cy = (_sub != null) ? _sub.y + _sub.height / 2 : Layout.SUB_CY;
+        var r = (_sub != null) ? _sub.width / 2 - 2 : Layout.SUB_R;
 
         // 지금이 낮이면 [일출, 일몰], 밤이면 [직전 일몰, 다음 일출] 구간
         var rising = false;
@@ -168,15 +176,15 @@ class InstinctFaceView extends WatchUi.WatchFace {
 
         if (from != null && to != null && to > from) {
             var left = (to - now) / 60;
-            dc.drawText(cx, cy - 9, Graphics.FONT_MEDIUM,
+            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Graphics.FONT_MEDIUM,
                 Lang.format("$1$:$2$", [left / 60, (left % 60).format("%02d")]),
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         } else {
-            dc.drawText(cx, cy - 9, Graphics.FONT_MEDIUM, "--:--",
+            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Graphics.FONT_MEDIUM, "--:--",
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
         // 아이콘은 9px로 작아 텐트처럼 보여서 글자로. 링 안쪽이 아래로 갈수록 좁아 숫자 바로 밑에 둔다
-        dc.drawText(cx, cy + 3, _kor, rising ? "일출" : "일몰", Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(cx, cy + Layout.SUB_LABEL_DY, _kor, rising ? "일출" : "일몰", Graphics.TEXT_JUSTIFY_CENTER);
     }
 
     // ---- 파타고라니 배너: 물결 띠 하늘 + 산맥 + 고라니, 해가 하늘을 가로지른다 ----
@@ -195,12 +203,12 @@ class InstinctFaceView extends WatchUi.WatchFace {
             sunX = px;
             var py = Banner.SUN_Y_LOW - ((Banner.SUN_Y_LOW - Banner.SUN_Y_HIGH) * Math.sin(Math.PI * frac)).toNumber();
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
-            dc.fillCircle(px, py, 4);
+            dc.fillCircle(px, py, Layout.SUN_R);
             dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
             if (day) {
-                dc.fillCircle(px, py, 2);
+                dc.fillCircle(px, py, Layout.SUN_R_IN);
             } else {
-                dc.drawCircle(px, py, 2);
+                dc.drawCircle(px, py, Layout.SUN_R_IN);
             }
             dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
         }
@@ -223,7 +231,9 @@ class InstinctFaceView extends WatchUi.WatchFace {
             var spots = side == 1 ? Banner.DEER_R : Banner.DEER_L;
             for (var i = 0; i < spots.size(); i++) {
                 var cx = spots[i][0] + spots[i][2] / 2;
-                if ((side == 1 && cx < sunX - 14) || (side == 0 && cx > sunX + 14)) { picks.add([side, i]); }
+                if ((side == 1 && cx < sunX - Layout.DEER_SUN_GAP) || (side == 0 && cx > sunX + Layout.DEER_SUN_GAP)) {
+                    picks.add([side, i]);
+                }
             }
         }
         if (picks.size() == 0) { picks.add([0, 0]); }
@@ -268,10 +278,10 @@ class InstinctFaceView extends WatchUi.WatchFace {
     hidden function drawBottomSlots(dc as Dc, w as Number) as Void {
         var sun = [_rise, _set];
         // 두 줄 모두 세 칸을 나란히. 화면 아래 모서리가 좁아지므로 배너 바로 밑으로 바짝 붙였다
-        // 첫 줄(폭 약 155px) 기본값: 고도 · 오늘 오른 높이 · 기온
-        Slots.drawRow(dc, _kor, [_slots[3], _slots[4], _slots[5]], w / 2, 136, sun, 5, 155);
-        // 둘째 줄(폭 약 138px) 기본값: 배터리 · 걸음 수 · 체력
-        Slots.drawRow(dc, _kor, [_slots[6], _slots[8], _slots[7]], w / 2, 148, sun, 4, 138);
+        // 첫 줄 기본값: 고도 · 오늘 오른 높이 · 기온
+        Slots.drawRow(dc, _kor, [_slots[3], _slots[4], _slots[5]], w / 2, Layout.ROW1_Y, sun, Layout.ROW1_GAP, Layout.ROW1_W);
+        // 둘째 줄(첫 줄보다 좁음) 기본값: 배터리 · 걸음 수 · 체력
+        Slots.drawRow(dc, _kor, [_slots[6], _slots[8], _slots[7]], w / 2, Layout.ROW2_Y, sun, Layout.ROW2_GAP, Layout.ROW2_W);
     }
 
     // ---- 날씨 전망: 3시간 기압 추세를 아이콘 + 단어로 ----
@@ -281,14 +291,14 @@ class InstinctFaceView extends WatchUi.WatchFace {
             updateBaro(now);
             _baroAt = now;
         }
-        var y = 161;
+        var y = Layout.BARO_Y;
         var str = _baroNote;
         if (_baroTrend != null) {
             str = ["폭풍 주의", "흐려짐", "유지", "맑아짐", "맑아짐"][_baroTrend + 2];
         }
         var fh = dc.getFontHeight(_kor);
         var tw = dc.getTextWidthInPixels(str, _kor);
-        var total = tw + 18;
+        var total = tw + Layout.BARO_TEXT_DX;
         var x = w / 2 - total / 2;
         var cy = y + fh / 2;
 
@@ -298,20 +308,22 @@ class InstinctFaceView extends WatchUi.WatchFace {
             dc.fillRoundedRectangle(x - 5, y, total + 10, fh + 1, 4);
             dc.setColor(Graphics.COLOR_BLACK, Graphics.COLOR_TRANSPARENT);
         }
+        var ix = x + Layout.ICON_DX;
         if (_baroTrend == null) {
-            dc.drawText(x + 6, y, _kor, "~", Graphics.TEXT_JUSTIFY_CENTER);
+            dc.drawText(ix, y, _kor, "~", Graphics.TEXT_JUSTIFY_CENTER);
         } else if (_baroTrend >= 1) {
-            Icons.sun(dc, x + 6, cy);
+            Icons.sun(dc, ix, cy);
         } else if (_baroTrend == 0) {
-            Icons.trend(dc, x + 6, cy, 0);
+            Icons.trend(dc, ix, cy, 0);
         } else if (_baroTrend == -1) {
             // 기온이 0°C 이하면 눈, 아니면 비 (기온은 폰 날씨, 없으면 비)
             var t = Slots.temperature();
-            dc.drawBitmap(x, y + 1, Slots.emoji(t != null && t <= 0 ? Rez.Drawables.EmojiSnow : Rez.Drawables.EmojiDrop));
+            dc.drawBitmap(x, y + Layout.EMOJI_DY,
+                Slots.emoji(t != null && t <= 0 ? Rez.Drawables.EmojiSnow : Rez.Drawables.EmojiDrop));
         } else {
-            Icons.bolt(dc, x + 6, cy);
+            Icons.bolt(dc, ix, cy);
         }
-        dc.drawText(x + 18, y, _kor, str, Graphics.TEXT_JUSTIFY_LEFT);
+        dc.drawText(x + Layout.BARO_TEXT_DX, y, _kor, str, Graphics.TEXT_JUSTIFY_LEFT);
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
     }
 

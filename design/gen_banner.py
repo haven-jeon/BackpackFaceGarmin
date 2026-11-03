@@ -1,10 +1,12 @@
-"""파타고라니 오마주 배너 생성기 (Instinct 3 Solar, 1bpp).
+"""파타고라니 오마주 배너 생성기 (1bpp).
 
 배너 = 물결 띠 하늘(흰 바탕) + 뾰족한 산맥(검정) + 봉우리 위 고라니. 시각 숫자는 흰 슬랩 세리프로 산 위에 얹는다.
+화면 크기별(TARGETS)로 따로 만든다: 176 = Instinct 3 Solar, 280 = Fenix 7X (1.5배).
 
-  python gen_banner.py preview   → previews/banner_options.png (숫자 서체 비교)
-  python gen_banner.py export    → ../InstinctFace/resources/ 에 배너·고라니 비트맵, 숫자 폰트 출력
-  python gen_banner.py spots     → previews/deer_spots.png (고라니가 설 수 있는 자리 모음)
+  python gen_banner.py preview   → previews/banner_options.png (숫자 서체 비교, 176)
+  python gen_banner.py export    → ../InstinctFace/resources-<화면>/ 에 배너·고라니·시각 숫자 비트맵,
+                                   ../InstinctFace/source-<화면>/Banner.mc (모든 화면)
+  python gen_banner.py spots     → previews/deer_spots.png (고라니가 설 수 있는 자리 모음, 176)
 
 서체: Alfa Slab One (SIL OFL, fonts/ 참고)
 """
@@ -18,10 +20,27 @@ HERE = Path(__file__).resolve().parent
 FONTS = HERE / "fonts"
 PROJ = HERE.parent / "InstinctFace"
 
-# 화면 좌표. 서브스크린 베젤(중심 144,31 반경 약 40)을 피하려고 배너는 y=72부터.
-BX, BY, BW, BH = 8, 72, 160, 60
-DIGIT_H = 32                 # 숫자 높이
-DIGIT_Y = BY + BH - DIGIT_H - 2   # 숫자 윗변(화면 좌표)
+# 화면별 배치. S = 176 화면 대비 배율 (배너 안 모양·두께는 모두 S로 키운다)
+#   176: 서브스크린 베젤(중심 144,31 반경 약 40)을 피하려고 배너는 y=72부터.
+#   280: 둥근 화면이라 배너 네 모서리가 화면 안에 들도록 가운데로 내리고, 서브스크린 원(196,62 r40) 아래에 둔다.
+# BEZEL = 고라니가 들어가면 안 되는 서브스크린 원 (중심 x, y, 반경)
+# TEXT_BOTTOM = 이 x보다 왼쪽은 좌상단 글자 줄이 이 y까지 내려온다
+TARGETS = {
+    "176": dict(S=1.0, BX=8, BY=72, BW=160, BH=60, DIGIT_H=32, BEZEL=(144, 31, 41), TEXT_BOTTOM=(110, 64)),
+    "280": dict(S=1.5, BX=20, BY=106, BW=240, BH=90, DIGIT_H=48, BEZEL=(196, 62, 44), TEXT_BOTTOM=(152, 93)),
+}
+
+
+def use(target):
+    """TARGETS[target] 값을 모듈 전역으로 (함수들이 전역을 읽는다)."""
+    g = globals()
+    g["TARGET"] = target
+    g.update(TARGETS[target])
+    S = g["S"]
+    g["LINE"] = round(S)                              # 물결·틈 선 두께
+    g["DIGIT_Y"] = BY + BH - DIGIT_H - round(2 * S)   # 숫자 윗변(화면 좌표)
+    g["TRACK"] = round(2 * S)
+    g["LEG_EXT"], g["LEG_SINK"], g["SPOT_GAP"] = round(4 * S), round(2 * S), round(12 * S)
 
 # 산맥 꼴: (x 비율, 배너 안 y px). 봉우리 4~5개, 고라니는 DEER_PEAK 봉우리 위에 선다.
 RIDGE = [(0.00, 25), (0.04, 21), (0.08, 23), (0.13, 16), (0.17, 19), (0.21, 14), (0.24, 18),
@@ -34,7 +53,7 @@ SUN_Y = (11, 5)              # 해 높이: 일출·일몰 때 y, 정오 때 y (�
 def ridge_y():
     xs = np.arange(BW) / (BW - 1)
     px, py = zip(*RIDGE)
-    return np.round(np.interp(xs, px, py)).astype(int)
+    return np.round(np.interp(xs, px, np.array(py) * S)).astype(int)
 
 
 def make_banner():
@@ -43,13 +62,13 @@ def make_banner():
     xs = np.arange(BW)
     # 물결 띠: (기준 y, 두께, 진폭, 주기, 위상)
     for y0, th, amp, per, ph in [(3, 1, 0.8, 70, 0.0), (11, 1, 0.8, 80, 2.1)]:
-        ys = np.round(y0 + amp * np.sin(xs / per * 2 * np.pi + ph)).astype(int)
+        ys = np.round(y0 * S + amp * S * np.sin(xs / (per * S) * 2 * np.pi + ph)).astype(int)
         for x, y in zip(xs, ys):
-            m[y:y + th, x] = False
+            m[y:y + th * LINE, x] = False
     # 로고의 주황 띠 → 체크무늬(디더링) 띠
-    ys = np.round(6.5 + 0.9 * np.sin(xs / 64 * 2 * np.pi + 0.7)).astype(int)
+    ys = np.round(6.5 * S + 0.9 * S * np.sin(xs / (64 * S) * 2 * np.pi + 0.7)).astype(int)
     for x, y in zip(xs, ys):
-        for yy in range(y, y + 2):
+        for yy in range(y, y + round(2 * S)):
             if (x + yy) % 2 == 0:
                 m[yy, x] = False
     # 산맥
@@ -85,7 +104,13 @@ DEER = [
 
 
 def make_deer():
-    return np.array([[c == "#" for c in row] for row in DEER])
+    m = np.array([[c == "#" for c in row] for row in DEER])
+    if S == 1:
+        return m
+    # 픽셀 아트를 부드럽게 키운 뒤 다시 1bpp로 (최근접 확대는 1.5배에서 다리 굵기가 들쭉날쭉해진다)
+    n = round(m.shape[0] * S)
+    im = Image.fromarray((m * 255).astype(np.uint8)).resize((n, n), Image.LANCZOS)
+    return np.array(im) > 110
 
 
 def digit_font(path, h):
@@ -95,8 +120,9 @@ def digit_font(path, h):
     return ImageFont.truetype(str(path), round(100 * h / (b[3] - b[1])))
 
 
-def render_text(font, text, track=2):
+def render_text(font, text, track=None):
     """시각 문자열을 1bpp 마스크로. 숫자는 고정 폭 칸 가운데 정렬 (시각이 바뀌어도 흔들리지 않게)."""
+    track = TRACK if track is None else track
     cell = max(font.getbbox(c)[2] - font.getbbox(c)[0] for c in "0123456789")
     top = font.getbbox("0")[1]
     parts = []
@@ -124,7 +150,7 @@ SKY_GAPS = [1, 4]            # 숫자 윗부분 하늘 띠 사이 틈
 def profile(pts, w):
     xs = np.arange(w) / max(w - 1, 1)
     px, py = zip(*pts)
-    return np.round(np.interp(xs, px, py)).astype(int)
+    return np.round(np.interp(xs, px, np.array(py) * S)).astype(int)
 
 
 def mountain_layers(row, mode="dither"):
@@ -132,25 +158,26 @@ def mountain_layers(row, mode="dither"):
     mode: "dither" = 먼 산을 옅게(대기 원근), "solid" = 먼 산도 꽉 참, "alpine" = 능선 하나(이전 3-A)."""
     h, w = row.shape
     out = row.copy()
+    gaps = [round(g * S) for g in SKY_GAPS]
     if mode == "alpine":
-        near = profile(NEAR_RIDGE, w) - 4
+        near = profile(NEAR_RIDGE, w) - round(4 * S)
         for x in range(w):
-            out[near[x] - 2:near[x], x] = False
-            for g in SKY_GAPS + [7, 10]:
-                if g < near[x] - 2:
-                    out[g, x] = False
+            out[near[x] - 2 * LINE:near[x], x] = False
+            for g in gaps + [round(7 * S), round(10 * S)]:
+                if g < near[x] - 2 * LINE:
+                    out[g:g + LINE, x] = False
         return out
     far, near = profile(FAR_RIDGE, w), profile(NEAR_RIDGE, w)
     for x in range(w):
-        for g in SKY_GAPS:
-            if g < far[x] - 1:
-                out[g, x] = False
-        out[far[x] - 1, x] = False                      # 먼 능선 틈
+        for g in gaps:
+            if g < far[x] - LINE:
+                out[g:g + LINE, x] = False
+        out[far[x] - LINE:far[x], x] = False            # 먼 능선 틈
         if mode == "dither":
-            for y in range(far[x], near[x] - 1):
+            for y in range(far[x], near[x] - LINE):
                 if x % 2 == 0 and y % 2 == 0:
                     out[y, x] = False
-        out[near[x] - 1, x] = False                     # 가까운 능선 틈
+        out[near[x] - LINE:near[x], x] = False          # 가까운 능선 틈
     return out
 
 
@@ -164,7 +191,7 @@ def compose(base, font, text="11:22", sun_frac=0.42, mode=None):
     scr[y0 + 1:y1, x0] = scr[y0 + 1:y1, x1] = True
     # 해: 흰 테두리 + 검정 원
     sx = BX + int((BW - 1) * sun_frac)
-    sy = BY + int(SUN_Y[0] - (SUN_Y[0] - SUN_Y[1]) * np.sin(np.pi * sun_frac))
+    sy = BY + int(SUN_Y[0] * S - (SUN_Y[0] - SUN_Y[1]) * S * np.sin(np.pi * sun_frac))
     yy, xx = np.ogrid[:176, :176]
     d2 = (xx - sx) ** 2 + (yy - sy) ** 2
     scr[d2 <= 16] = True
@@ -172,7 +199,7 @@ def compose(base, font, text="11:22", sun_frac=0.42, mode=None):
     # 고라니: 발이 봉우리에 닿게
     deer = make_deer()
     dx = BX + int((BW - 1) * DEER_PEAK[0]) - deer.shape[1] // 2
-    dy = BY + DEER_PEAK[1] - deer.shape[0] + 1
+    dy = BY + round(DEER_PEAK[1] * S) - deer.shape[0] + 1
     # 머리가 배너 위 검정 바탕으로 튀어나가므로 1px 흰 테두리를 먼저 깐다
     halo = np.pad(deer, 1)
     halo = halo | np.roll(halo, 1, 0) | np.roll(halo, -1, 0) | np.roll(halo, 1, 1) | np.roll(halo, -1, 1)
@@ -210,7 +237,6 @@ def preview():
 
 DIGIT_FONT = FONTS / "AlfaSlabOne-Regular.ttf"
 DIGIT_MODE = "solid"         # 숫자 안 산그리메: "solid" / "dither" / "alpine" (preview로 비교)
-TRACK = 2
 
 
 def deer_with_halo():
@@ -222,10 +248,7 @@ def deer_with_halo():
 
 # 고라니가 능선 여기저기에 선다 (시각마다 자리를 바꿈). 능선이 울퉁불퉁해서 다리 길이를 자리마다
 # 땅에 맞게 늘이거나(최대 LEG_EXT) 땅속으로 묻는다(최대 LEG_SINK). 자리마다 비트맵을 미리 그려 둔다.
-LEG_EXT, LEG_SINK = 4, 2
-SPOT_GAP = 12                # 고른 자리끼리 최소 x 간격
-TEXT_BOTTOM = (110, 64)      # 이 x보다 왼쪽은 좌상단 지명 줄이 y=64까지 내려온다
-BEZEL = (144, 31, 41)        # 서브스크린 베젤 (중심 x, y, 반경)
+# SPOT_GAP = 고른 자리끼리 최소 x 간격. 셋 다 use()에서 화면 배율에 맞춘다.
 
 
 def deer_spot(x0, flip):
@@ -317,7 +340,7 @@ def banner_with_border():
 
 
 def export():
-    res = PROJ / "resources"
+    res = PROJ / f"resources-{TARGET}"
     (res / "drawables" / "banner").mkdir(parents=True, exist_ok=True)
 
     def save_1bpp(mask, path):
@@ -380,7 +403,8 @@ def export():
 
     def spot_ids(side):
         return ", ".join(f"Rez.Drawables.Deer{side}{i}" for i in range(len(spots[side])))
-    (PROJ / "source" / "Banner.mc").write_text(f"""import Toybox.Lang;
+    (PROJ / f"source-{TARGET}").mkdir(exist_ok=True)
+    (PROJ / f"source-{TARGET}" / "Banner.mc").write_text(f"""import Toybox.Lang;
 
 // design/gen_banner.py export 로 생성된 파일. 직접 고치지 말고 스크립트를 다시 실행할 것.
 module Banner {{
@@ -388,8 +412,8 @@ module Banner {{
     const Y = {BY - 2};
     const SKY_X0 = {BX};          // 해가 지나가는 하늘 폭
     const SKY_X1 = {BX + BW - 1};
-    const SUN_Y_LOW = {BY + SUN_Y[0]};    // 일출·일몰 때 해 높이
-    const SUN_Y_HIGH = {BY + SUN_Y[1]};   // 정오 때 해 높이
+    const SUN_Y_LOW = {BY + round(SUN_Y[0] * S)};    // 일출·일몰 때 해 높이
+    const SUN_Y_HIGH = {BY + round(SUN_Y[1] * S)};   // 정오 때 해 높이
     // 고라니가 설 수 있는 자리 [비트맵 왼쪽 위 x, y, 폭]. L = 왼쪽을 봄, R = 오른쪽을 봄
     const DEER_L = [{spot_rows("L")}];
     const DEER_R = [{spot_rows("R")}];
@@ -410,15 +434,19 @@ module Banner {{
     }}
 }}
 """)
-    print(f"exported banner, deer spots L{len(spots['L'])}/R{len(spots['R'])}, 41 digit bitmaps ({DIGIT_MODE}), Banner.mc")
+    print(f"[{TARGET}] exported banner, deer spots L{len(spots['L'])}/R{len(spots['R'])}, "
+          f"41 digit bitmaps ({DIGIT_MODE}), Banner.mc")
 
 
 if __name__ == "__main__":
+    use("176")
     if sys.argv[1:2] == ["preview"]:
         preview()
     elif sys.argv[1:2] == ["spots"]:
         spots_preview()
     elif sys.argv[1:2] == ["export"]:
-        export()
+        for t in TARGETS:
+            use(t)
+            export()
     else:
         print(__doc__)

@@ -1,1 +1,7 @@
 project.manifest = manifest.xml
+
+# 화면 크기별 리소스·배치: 176 = Instinct 3 Solar, 280 = Fenix 7X (design/ 스크립트가 둘 다 만든다)
+base.sourcePath = source;source-176
+base.resourcePath = resources;resources-176
+fenix7x.sourcePath = source;source-280
+fenix7x.resourcePath = resources;resources-280

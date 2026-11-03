@@ -50,7 +50,7 @@ module Slots {
         if (type == NONE) { return; }
         var c = content(type, sun);
         var f = font;
-        if (type == PLACE) { c[0] = fit(dc, f, c[0] as String, PLACE_MAX_W); }
+        if (type == PLACE) { c[0] = fit(dc, f, c[0] as String, Layout.PLACE_MAX_W); }
         drawAt(dc, f, type, c, cx - width(dc, f, c, true) / 2, y, true);
     }
 
@@ -142,14 +142,14 @@ module Slots {
     // 아이콘(또는 이름표) 앞머리 폭
     function headWidth(dc as Dc, font as Graphics.FontType, c as Array) as Number {
         if (c[2] != null) { return dc.getTextWidthInPixels(c[2], font) + 3; }
-        if (c[1] == :steps || c[1] == :bell) { return 14; }   // 12px 이모지 + 2px
-        return c[1] != null ? 15 : 0;
+        if (c[1] == :steps || c[1] == :bell) { return Layout.EMOJI_W; }
+        return c[1] != null ? Layout.ICON_W : 0;
     }
 
     // solar: 배터리 칸 뒤에 태양광 충전 해를 붙일지
     function width(dc as Dc, font as Graphics.FontType, c as Array, solar as Boolean) as Number {
         var w = headWidth(dc, font, c) + dc.getTextWidthInPixels(c[0], font);
-        if (solar && c[1] == :battery && solarCharging()) { w += 14; }
+        if (solar && c[1] == :battery && solarCharging()) { w += Layout.SOLAR_W; }
         return w;
     }
 
@@ -160,29 +160,30 @@ module Slots {
         var icon = c[1];
         var label = c[2];
         var lw = headWidth(dc, font, c);
-        var iy = y + 6;
+        var ix = x + Layout.ICON_DX;
+        var iy = y + Layout.ICON_DY;
         if (label != null) {
             dc.drawText(x, y, font, label, Graphics.TEXT_JUSTIFY_LEFT);
         } else if (icon == :mountain) {
-            Icons.mountain(dc, x + 6, iy);
+            Icons.mountain(dc, ix, iy);
         } else if (icon == :up) {
-            Icons.up(dc, x + 6, iy);
+            Icons.up(dc, ix, iy);
         } else if (icon == :battery) {
-            Icons.battery(dc, x + 6, iy, System.getSystemStats().battery.toNumber());
+            Icons.battery(dc, ix, iy, System.getSystemStats().battery.toNumber());
         } else if (icon == :heart) {
-            Icons.heart(dc, x + 6, iy);
+            Icons.heart(dc, ix, iy);
         } else if (icon == :thermo) {
-            Icons.thermometer(dc, x + 6, iy);
+            Icons.thermometer(dc, ix, iy);
         } else if (icon == :steps) {
-            dc.drawBitmap(x, y + 1, emoji(Rez.Drawables.EmojiSteps));
+            dc.drawBitmap(x, y + Layout.EMOJI_DY, emoji(Rez.Drawables.EmojiSteps));
         } else if (icon == :bell) {
-            dc.drawBitmap(x, y + 1, emoji(Rez.Drawables.EmojiBell));
+            dc.drawBitmap(x, y + Layout.EMOJI_DY, emoji(Rez.Drawables.EmojiBell));
         }
         dc.drawText(x + lw, y, font, text, Graphics.TEXT_JUSTIFY_LEFT);
 
         // 태양광 충전 중이면 배터리 칸 뒤에 해
         if (solar && icon == :battery && solarCharging()) {
-            Icons.sun(dc, x + lw + dc.getTextWidthInPixels(text, font) + 8, iy);
+            Icons.sun(dc, x + lw + dc.getTextWidthInPixels(text, font) + Layout.SOLAR_DX, iy);
         }
     }
 
@@ -192,7 +193,7 @@ module Slots {
         return solar != null && solar > 0;
     }
 
-    // 12px 흑백 이모지 비트맵 (design/gen_emoji.py). 처음 쓸 때 한 번만 읽는다.
+    // 흑백 이모지 비트맵 (design/gen_emoji.py, 화면별 12/15px). 처음 쓸 때 한 번만 읽는다.
     var _emoji as Dictionary<ResourceId, WatchUi.BitmapResource> = {};
 
     function emoji(id as ResourceId) as WatchUi.BitmapResource {
@@ -276,9 +277,6 @@ module Slots {
         _place = Places.nearest(loc);
         return _place;
     }
-
-    // 좌상단 줄에서 서브스크린 테두리에 걸리지 않는 폭
-    const PLACE_MAX_W = 96;
 
     // 폭을 넘으면 쉼표 앞부분만 ("Jung-gu, Seoul" → "Jung-gu"), 그래도 넘으면 뒤를 자른다
     function fit(dc as Dc, font as Graphics.FontType, text as String, maxW as Number) as String {

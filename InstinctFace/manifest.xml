@@ -4,6 +4,7 @@
         entry="InstinctFaceApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.3.0">
         <iq:products>
             <iq:product id="instinct3solar45mm"/>  <!-- 45mm·50mm 공용 ID -->
+            <iq:product id="fenix7x"/>  <!-- fēnix 7X / 7X Solar / 7X Sapphire Solar -->
         </iq:products>
         <iq:permissions>
             <iq:uses-permission id="SensorHistory"/>
