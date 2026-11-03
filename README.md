@@ -2,9 +2,11 @@
 
 Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공용).
 
+<img src="docs/instinctface.png" width="264" alt="InstinctFace 시뮬레이터 화면">
+
 | 폴더 | 종류 | 내용 |
 |---|---|---|
-| `InstinctFace/` | 워치 페이스 | 백패킹용. 능선 숫자, 고라니 배너, 일출·일몰, 가까운 지명, 태양광 링 |
+| `InstinctFace/` | 워치 페이스 | 백패킹용. 능선 숫자, 고라니 배너, 일출·일몰, 가까운 지명, 태양광 링 ([README](InstinctFace/README.md)) |
 | `SunsetMargin/` | 데이터 필드 | 일몰 전 도착 여유 시간 ([README](SunsetMargin/README.md)) |
 | `InstinctApp/` | 워치 앱 | 기본 틀 |
 | `design/` | 리소스 생성 | 숫자·배너·이모지·한글 폰트·지명표를 만드는 Python 스크립트와 원본 폰트 |
