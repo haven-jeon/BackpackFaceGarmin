@@ -1,0 +1,14 @@
+<settings>
+    <setting propertyKey="@Properties.baseSpeed" title="@Strings.BaseSpeedTitle">
+        <settingConfig type="numeric" min="1" max="8" />
+    </setting>
+    <setting propertyKey="@Properties.ascentRate" title="@Strings.AscentRateTitle">
+        <settingConfig type="numeric" min="100" max="1200" />
+    </setting>
+    <setting propertyKey="@Properties.alertMin" title="@Strings.AlertMinTitle">
+        <settingConfig type="numeric" min="0" max="180" />
+    </setting>
+    <setting propertyKey="@Properties.autoCalibrate" title="@Strings.AutoCalTitle">
+        <settingConfig type="boolean" />
+    </setting>
+</settings>

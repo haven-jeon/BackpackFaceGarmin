@@ -1,0 +1,7 @@
+<strings>
+    <string id="AppName">Sunset Margin</string>
+    <string id="BaseSpeedTitle">평지 보행 속도 (km/h)</string>
+    <string id="AscentRateTitle">시간당 상승고도 (m/h)</string>
+    <string id="AlertMinTitle">경고 기준 여유시간 (분)</string>
+    <string id="AutoCalTitle">내 페이스로 자동 보정</string>
+</strings>

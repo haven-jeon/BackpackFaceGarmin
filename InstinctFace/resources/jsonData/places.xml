@@ -1,0 +1,15 @@
+<resources>
+    <jsonData id="PlacePoints" filename="places_pts.json" />
+    <jsonData id="PlaceNames0" filename="places_names0.json" />
+    <jsonData id="PlaceNames1" filename="places_names1.json" />
+    <jsonData id="PlaceNames2" filename="places_names2.json" />
+    <jsonData id="PlaceNames3" filename="places_names3.json" />
+    <jsonData id="PlaceNames4" filename="places_names4.json" />
+    <jsonData id="PlaceNames5" filename="places_names5.json" />
+    <jsonData id="PlaceNames6" filename="places_names6.json" />
+    <jsonData id="PlaceNames7" filename="places_names7.json" />
+    <jsonData id="PlaceNames8" filename="places_names8.json" />
+    <jsonData id="PlaceNames9" filename="places_names9.json" />
+    <jsonData id="PlaceNames10" filename="places_names10.json" />
+    <jsonData id="PlaceNames11" filename="places_names11.json" />
+</resources>

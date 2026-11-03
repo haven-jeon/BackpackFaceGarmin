@@ -1,0 +1,6 @@
+<properties>
+    <property id="baseSpeed" type="float">4.0</property>
+    <property id="ascentRate" type="number">400</property>
+    <property id="alertMin" type="number">30</property>
+    <property id="autoCalibrate" type="boolean">true</property>
+</properties>

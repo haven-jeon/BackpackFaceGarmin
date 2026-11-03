@@ -1,0 +1,17 @@
+# 개발자 키: 절대 커밋하지 않는다 (잃어버리면 같은 앱 ID로 업데이트 불가 → 따로 백업)
+.devkey/
+
+# 빌드 산출물
+bin/
+*.prg
+*.iq
+*.prg.debug.xml
+
+# SunsetMargin 원본 압축본 (풀어서 수정한 SunsetMargin/ 이 기준)
+SunsetMargin.zip
+
+# OS / 에디터 / Python
+.DS_Store
+__pycache__/
+*.pyc
+.venv/

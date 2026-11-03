@@ -1,0 +1,155 @@
+<settings>
+    <setting propertyKey="@Properties.top1" title="@Strings.top1Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.top2" title="@Strings.top2Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.top3" title="@Strings.top3Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.row1" title="@Strings.row1Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.row2" title="@Strings.row2Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.row3" title="@Strings.row3Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.low1" title="@Strings.low1Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.low2" title="@Strings.low2Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+    <setting propertyKey="@Properties.low3" title="@Strings.low3Title">
+        <settingConfig type="list">
+            <listEntry value="0">@Strings.OptNone</listEntry>
+            <listEntry value="1">@Strings.OptAltitude</listEntry>
+            <listEntry value="2">@Strings.OptAscent</listEntry>
+            <listEntry value="3">@Strings.OptBattery</listEntry>
+            <listEntry value="4">@Strings.OptBody</listEntry>
+            <listEntry value="5">@Strings.OptSun</listEntry>
+            <listEntry value="6">@Strings.OptSteps</listEntry>
+            <listEntry value="7">@Strings.OptDistance</listEntry>
+            <listEntry value="8">@Strings.OptHeart</listEntry>
+            <listEntry value="9">@Strings.OptTemp</listEntry>
+            <listEntry value="10">@Strings.OptNotify</listEntry>
+            <listEntry value="11">@Strings.OptTempRange</listEntry>
+            <listEntry value="12">@Strings.OptPlace</listEntry>
+        </settingConfig>
+    </setting>
+</settings>

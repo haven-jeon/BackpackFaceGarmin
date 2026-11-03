@@ -1,0 +1,22 @@
+<drawables>
+    <bitmap id="Banner" filename="banner/banner.png"><palette disableTransparency="true"><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL0" filename="banner/deer_l0.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL1" filename="banner/deer_l1.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL2" filename="banner/deer_l2.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL3" filename="banner/deer_l3.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL4" filename="banner/deer_l4.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL5" filename="banner/deer_l5.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL6" filename="banner/deer_l6.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL7" filename="banner/deer_l7.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL8" filename="banner/deer_l8.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerL9" filename="banner/deer_l9.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR0" filename="banner/deer_r0.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR1" filename="banner/deer_r1.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR2" filename="banner/deer_r2.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR3" filename="banner/deer_r3.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR4" filename="banner/deer_r4.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR5" filename="banner/deer_r5.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR6" filename="banner/deer_r6.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR7" filename="banner/deer_r7.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="DeerR8" filename="banner/deer_r8.png"><palette><color>000000</color><color>FFFFFF</color></palette></bitmap>
+</drawables>

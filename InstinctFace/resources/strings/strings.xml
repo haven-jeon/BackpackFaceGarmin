@@ -1,0 +1,25 @@
+<strings>
+    <string id="AppName">Backpack Face</string>
+    <string id="top1Title">좌상단 첫째 줄</string>
+    <string id="top2Title">좌상단 둘째 줄</string>
+    <string id="top3Title">좌상단 셋째 줄</string>
+    <string id="row1Title">아래 첫 줄 왼쪽</string>
+    <string id="row2Title">아래 첫 줄 가운데</string>
+    <string id="row3Title">아래 첫 줄 오른쪽</string>
+    <string id="low1Title">아래 둘째 줄 왼쪽</string>
+    <string id="low2Title">아래 둘째 줄 오른쪽</string>
+    <string id="low3Title">아래 둘째 줄 가운데</string>
+    <string id="OptNone">없음</string>
+    <string id="OptAltitude">고도</string>
+    <string id="OptAscent">오늘 오른 높이</string>
+    <string id="OptBattery">배터리 남은 일수</string>
+    <string id="OptBody">체력 (바디 배터리)</string>
+    <string id="OptSun">일출·일몰 시각</string>
+    <string id="OptSteps">걸음 수</string>
+    <string id="OptDistance">오늘 이동 거리</string>
+    <string id="OptHeart">심박</string>
+    <string id="OptTemp">기온 (폰 날씨)</string>
+    <string id="OptNotify">알림 수</string>
+    <string id="OptTempRange">오늘 최저~최고 기온</string>
+    <string id="OptPlace">지명 (시·군·구, 명산)</string>
+</strings>

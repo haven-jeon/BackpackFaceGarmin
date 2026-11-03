@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<iq:manifest xmlns:iq="http://www.garmin.com/xml/connectiq" version="3">
+    <iq:application id="a446964c-4879-44d6-8d22-bb2f8f5d78a3" type="datafield" name="@Strings.AppName"
+        entry="SunsetMarginApp" launcherIcon="@Drawables.LauncherIcon" minApiLevel="3.3.0">
+        <iq:products>
+            <!-- SDK Manager에서 실제 디바이스 ID 확인 후 필요시 수정 -->
+            <iq:product id="instinct3solar45mm"/>  <!-- 45mm·50mm 공용 ID -->
+        </iq:products>
+        <iq:permissions/>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+            <iq:language>kor</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

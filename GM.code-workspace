@@ -1,0 +1,12 @@
+{
+    "folders": [
+        { "path": "InstinctFace" },
+        { "path": "InstinctApp" },
+        { "path": "SunsetMargin" }
+    ],
+    "settings": {
+        "monkeyC.developerKeyPath": "/Users/user/work/GM/.devkey/developer_key.der",
+        "monkeyC.typeCheckLevel": "Default",
+        "monkeyC.compilerWarnings": true
+    }
+}
