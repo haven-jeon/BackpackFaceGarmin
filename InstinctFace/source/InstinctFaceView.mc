@@ -13,16 +13,16 @@ import Toybox.WatchUi;
 // 백패킹용 워치 페이스 (Instinct 3 Solar 176x176 1bpp, 우상단 서브스크린 113,0,62x62)
 //
 //  ┌──────────────┬─(sub)─┐
-//  │ 10월 27일 화  │ 2:10  │  ← 일몰(밤이면 일출)까지 남은 시간, 링 = 남은 낮/밤 비율
-//  │  [TL1]       │  ⌓↓   │
-//  │  [TL2]       └───────┘  ← 정보 칸 3개 (기본: 고도 / 오늘 상승 / 기온)
-//  │  [TL3]                 │
+//  │ 10월 27일 화  │ 2:10  │  ← 일몰(밤이면 일출)까지 남은 시간, 링 = 지금 태양광 충전 세기
+//  │  [top1]      │ 일몰  │
+//  │  [top2]      └───────┘  ← 정보 칸 3개 (기본: 일출·일몰 / 오늘 기온 범위 / 지명)
+//  │  [top3]                │
 //  ┌────────────────────────┐
-//  │ ≈≈≈ ● ≈≈≈ 🦌 ≈≈≈≈≈≈≈≈ │  ← 하늘(물결 띠)을 가로지르는 해 = 일출~일몰 진행, 봉우리 위 고라니
+//  │ ≈≈≈ ● ≈≈≈ 🦌 ≈≈≈≈≈≈≈≈ │  ← 하늘(물결 띠)을 가로지르는 해 = 일출~일몰 진행, 능선 위 고라니 (한 시간마다 자리 이동)
 //  │ /\/\/\ 10:42 /\/\/\/\ │  ← 산맥 위 시각 (파타고라니 오마주 배너), 숫자 안 산그리메
 //  └────────────────────────┘
-//  │   [B1]      [B2]       │  ← 정보 칸 4개 (기본: 배터리 일수 / 체력 / 일출·일몰 / 오늘 기온 범위)
-//  │   [B3]      [B4]       │
+//  │ [row1]  [row2]  [row3] │  ← 정보 칸 3개 (기본: 고도 / 오늘 오른 높이 / 기온)
+//  │ [low1]  [low3]  [low2] │  ← 정보 칸 3개 (기본: 배터리 일수 / 걸음 수 / 체력)
 //  │     ☁ 흐려짐            │  ← 3시간 기압 추세로 본 날씨 전망 (폭풍 가능성이면 반전 경고)
 //  └────────────────────────┘
 // 정보 칸은 폰의 Garmin Connect 앱 > 워치 페이스 설정에서 고른다 (resources/settings).
@@ -124,7 +124,7 @@ class InstinctFaceView extends WatchUi.WatchFace {
         return s > 100 ? 100 : s.toNumber();
     }
 
-    // ---- 좌상단: 날짜 + 정보 칸 3개 (TL1~TL3) ----
+    // ---- 좌상단: 날짜 + 정보 칸 3개 (top1~3) ----
     hidden function drawTopLeft(dc as Dc, info as Gregorian.Info) as Void {
         var cx = 58;
         // FORMAT_SHORT: month 1~12, day_of_week 1(일)~7(토)
@@ -264,7 +264,7 @@ class InstinctFaceView extends WatchUi.WatchFace {
         return _glyph[pos] as WatchUi.BitmapResource;
     }
 
-    // ---- 배너 아래: 정보 칸 2칸 x 2줄 (B1 B2 / B3 B4) ----
+    // ---- 배너 아래: 정보 칸 3칸 x 2줄 (row1~3 / low1·low3·low2) ----
     hidden function drawBottomSlots(dc as Dc, w as Number) as Void {
         var sun = [_rise, _set];
         // 두 줄 모두 세 칸을 나란히. 화면 아래 모서리가 좁아지므로 배너 바로 밑으로 바짝 붙였다
