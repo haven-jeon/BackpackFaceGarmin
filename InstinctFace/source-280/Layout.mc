@@ -1,3 +1,4 @@
+import Toybox.Graphics;
 import Toybox.Lang;
 
 // 화면 배치 상수: Fenix 7X (280x280 원형, 서브스크린 없음 → 우상단에 원을 직접 그린다)
@@ -16,8 +17,11 @@ module Layout {
     const SUB_CX = 196;
     const SUB_CY = 62;
     const SUB_R = 40;
+    const SUB_FONT = Graphics.FONT_MEDIUM;
     const SUB_TIME_DY = -12;     // 남은 시간 글자 세로 중심 (원 중심 기준)
     const SUB_LABEL_DY = 4;      // "일출"/"일몰" 윗변
+    const SUB_PEN = 1;           // 원 테두리 두께
+    const RING_W = 4;            // 둘레 링(태양광 세기 또는 남은 낮/밤) 두께
 
     // 배너 안 해 반지름 (바깥 흰 원, 안쪽 검정 원), 고라니가 해에서 떨어져 설 최소 x 거리
     const SUN_R = 6;
@@ -43,4 +47,6 @@ module Layout {
     const SOLAR_DX = 10;         // 배터리 글자 뒤 태양광 해 중심까지
     const SOLAR_W = 17;
     const BARO_TEXT_DX = 22;     // 날씨 전망 아이콘 왼쪽에서 글자까지
+
+    const AOD_DATE_Y = 0;        // 저전력 화면 없음 (MIP 화면, Banner.HAS_AOD = false)
 }

@@ -1,0 +1,14 @@
+<drawables>
+    <bitmap id="AodD0" filename="aod/d0.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD1" filename="aod/d1.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD2" filename="aod/d2.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD3" filename="aod/d3.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD4" filename="aod/d4.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD5" filename="aod/d5.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD6" filename="aod/d6.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD7" filename="aod/d7.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD8" filename="aod/d8.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodD9" filename="aod/d9.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodColon" filename="aod/colon.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="AodRidge" filename="aod/ridge.png"><palette><color>FFFFFF</color></palette></bitmap>
+</drawables>

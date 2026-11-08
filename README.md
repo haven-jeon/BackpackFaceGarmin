@@ -1,8 +1,8 @@
 # GM — Garmin Instinct 3 Solar 개인 앱 모음
 
-Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공용). 워치 페이스는 `fenix7x`(Fenix 7X Solar 등)도 지원.
+Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공용). 워치 페이스는 `fenix7x`(Fenix 7X Solar 등)와 `fr970`(Forerunner 970)도 지원.
 
-<img src="docs/instinctface.png" width="264" alt="InstinctFace 시뮬레이터 화면"> <img src="docs/fenix7x.png" width="280" alt="Fenix 7X 시뮬레이터 화면">
+<img src="docs/instinctface.png" width="264" alt="InstinctFace 시뮬레이터 화면"> <img src="docs/fenix7x.png" width="280" alt="Fenix 7X 시뮬레이터 화면"> <img src="docs/fr970.png" width="280" alt="Forerunner 970 시뮬레이터 화면">
 
 | 폴더 | 종류 | 내용 |
 |---|---|---|
@@ -23,6 +23,7 @@ Connect IQ 프로젝트. 대상 기기 ID `instinct3solar45mm` (45mm·50mm 공�
 ./build.sh InstinctFace instinct3solar45mm release # 릴리스 빌드
 ./build.sh InstinctFace instinct3solar45mm install # 릴리스 빌드 후 USB로 시계에 설치
 ./build.sh InstinctFace fenix7x run                # Fenix 7X 시뮬레이터
+./build.sh InstinctFace fr970 run                  # Forerunner 970 시뮬레이터
 ```
 
 ## 리소스 다시 만들기

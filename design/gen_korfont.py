@@ -4,6 +4,7 @@
 서체 (SIL OFL, fonts/OFL-Galmuri.txt): 화면별로 픽셀이 딱 맞는 크기를 쓴다.
   176 (Instinct 3 Solar) = 갈무리11 Bold 12px
   280 (Fenix 7X)         = 갈무리14 15px. Bold가 없어 가로로 1px 두껍게 그린다 (176과 같은 굵은 인상)
+  454 (Forerunner 970)   = 갈무리11 Bold 12px을 정수 2배로 (24px, 픽셀 느낌 그대로)
 
   python gen_korfont.py   → ../InstinctFace/resources-<화면>/fonts/kor.fnt, kor.png, fonts.xml
 
@@ -15,10 +16,11 @@ import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
 HERE = Path(__file__).resolve().parent
-# 화면 → (서체 파일, 크기 px, 가로 1px 굵게, BMFont face 이름)
+# 화면 → (서체 파일, 크기 px, 가로 1px 굵게, BMFont face 이름, 정수 배율)
 TARGETS = {
-    "176": ("Galmuri11-Bold.ttf", 12, False, "Galmuri11 Bold"),
-    "280": ("Galmuri14.ttf", 15, True, "Galmuri14"),
+    "176": ("Galmuri11-Bold.ttf", 12, False, "Galmuri11 Bold", 1),
+    "280": ("Galmuri14.ttf", 15, True, "Galmuri14", 1),
+    "454": ("Galmuri11-Bold.ttf", 12, False, "Galmuri11 Bold", 2),
 }
 
 # InstinctFaceView.mc 에서 이 폰트로 그리는 문구
@@ -32,11 +34,11 @@ TEXTS = [
 ]
 
 
-def export(target, font_file, size, bold, face):
+def export(target, font_file, size, bold, face, scale):
     from gen_places import labels        # 지명 칸 (시·군·구, 100대 명산)
     chars = sorted(set("".join(TEXTS + labels())))
     font = ImageFont.truetype(str(HERE / "fonts" / font_file), size)
-    ascent, descent = font.getmetrics()
+    ascent, descent = (v * scale for v in font.getmetrics())
 
     glyphs = []
     for ch in chars:
@@ -53,10 +55,15 @@ def export(target, font_file, size, bold, face):
             img = Image.fromarray((a * 255).astype(np.uint8))
             w += 1
             adv += 1
-        glyphs.append((ch, img, w, h, bb[0], bb[1], adv))
+        xo, yo = bb[0], bb[1]
+        if scale > 1:
+            if w and h:
+                img = img.resize((w * scale, h * scale), Image.NEAREST)
+            w, h, xo, yo, adv = w * scale, h * scale, xo * scale, yo * scale, adv * scale
+        glyphs.append((ch, img, w, h, xo, yo, adv))
 
     # 한 줄씩 채우는 단순 아틀라스
-    atlas_w, pad = 256, 1
+    atlas_w, pad = 256 * scale, 1
     x = y = row_h = 0
     places = []
     for ch, img, w, h, *_ in glyphs:
@@ -79,7 +86,7 @@ def export(target, font_file, size, bold, face):
     out.mkdir(parents=True, exist_ok=True)
     atlas.save(out / "kor.png")
     fnt = [
-        f'info face="{face}" size={size} bold=1 italic=0 charset="" unicode=1 '
+        f'info face="{face}" size={size * scale} bold=1 italic=0 charset="" unicode=1 '
         f'stretchH=100 smooth=0 aa=0 padding=0,0,0,0 spacing=1,1',
         f"common lineHeight={ascent + descent} base={ascent} scaleW={atlas_w} scaleH={atlas_h} pages=1 packed=0",
         'page id=0 file="kor.png"',

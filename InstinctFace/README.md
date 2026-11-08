@@ -1,9 +1,9 @@
-# Backpack Face — 백패킹 워치 페이스 (Instinct 3 Solar · Fenix 7X)
+# Backpack Face — 백패킹 워치 페이스 (Instinct 3 Solar · Fenix 7X · Forerunner 970)
 
 산에서 며칠씩 폰 없이 다녀도 필요한 정보가 한눈에 들어오도록 만든 흑백 워치 페이스.
 파타고니아 로고를 오마주한 "파타고라니" 배너(산맥 + 고라니) 위에 시각을 얹었다.
 
-<img src="../docs/instinctface.png" width="264" alt="Instinct 3 Solar 시뮬레이터 화면"> <img src="../docs/fenix7x.png" width="280" alt="Fenix 7X 시뮬레이터 화면">
+<img src="../docs/instinctface.png" width="264" alt="Instinct 3 Solar 시뮬레이터 화면"> <img src="../docs/fenix7x.png" width="280" alt="Fenix 7X 시뮬레이터 화면"> <img src="../docs/fr970.png" width="280" alt="Forerunner 970 시뮬레이터 화면">
 
 ## 지원 기기
 
@@ -11,6 +11,10 @@
 |---|---|---|---|
 | Instinct 3 Solar 45mm·50mm | `instinct3solar45mm` | 176×176 흑백, 서브스크린 | 기준 디자인 |
 | fēnix 7X / 7X Solar / 7X Sapphire Solar | `fenix7x` | 280×280 원형 | 같은 구성을 1.5배로 다시 그림. 서브스크린 자리에 원을 직접 그림 |
+| Forerunner 970 | `fr970` | 454×454 원형 AMOLED | 2.4배로 다시 그림. 태양광이 없어 링은 남은 낮/밤 비율. 손목을 내리면 저전력 화면 |
+
+**Forerunner 970 저전력 화면(AOD)**: 날짜, 능선 한 줄, 속 빈 시각 숫자만 그린다 (켜진 픽셀 약 3%,
+AMOLED는 10%를 넘으면 시계가 화면을 끈다). 번인을 막으려고 1분마다 네 자리를 돌아가며 몇 px씩 옮긴다.
 
 ## 화면 구성
 
@@ -63,10 +67,10 @@ Garmin Connect 앱 → 워치 페이스 설정에서 칸마다 고른다.
 | `source/SunTimes.mc` | 위치 확보, 일출·일몰 계산 |
 | `source/Places.mc` | 위치 → 가장 가까운 지명 |
 | `source/Icons.mc` | 작은 벡터 아이콘 (산, 화살표, 해, 번개 등) |
-| `source-176/`, `source-280/` | 화면별 배치: `Layout.mc`(글자·칸·서브스크린 좌표), `Banner.mc`(**생성 파일**) |
+| `source-176/`, `source-280/`, `source-454/` | 화면별 배치: `Layout.mc`(글자·칸·서브스크린 좌표), `Banner.mc`(**생성 파일**) |
 | `source/PlaceChunks.mc` | **생성 파일** — 직접 고치지 말 것 |
 | `resources/` | 화면 공통: 폰 설정 화면(칸 선택)과 기본값, 문자열, 지명표 |
-| `resources-176/`, `resources-280/` | 화면별 비트맵(배너·숫자·고라니·이모지)과 한글 폰트 |
+| `resources-176/`, `resources-280/`, `resources-454/` | 화면별 비트맵(배너·숫자·고라니·이모지, 454는 저전력 화면용 윤곽선)과 한글 폰트 |
 
 배너·숫자·이모지·한글 폰트·지명표는 [`design/`](../design/README.md)의 스크립트로 만든다.
 
@@ -79,6 +83,7 @@ Garmin Connect 앱 → 워치 페이스 설정에서 칸마다 고른다.
 ./build.sh InstinctFace instinct3solar45mm install  # USB로 연결한 시계에 설치
 ./build.sh InstinctFace fenix7x run                 # Fenix 7X 시뮬레이터
 ./build.sh InstinctFace fenix7x install             # Fenix 7X에 설치
+./build.sh InstinctFace fr970 run                   # Forerunner 970 시뮬레이터 (Settings → Low Power Mode로 저전력 화면)
 ```
 
 시뮬레이터에서 지명·일출·일몰을 보려면 Settings → Set Position으로 위치를 넣는다.

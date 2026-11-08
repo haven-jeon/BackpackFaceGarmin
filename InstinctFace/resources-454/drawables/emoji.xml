@@ -1,0 +1,6 @@
+<drawables>
+    <bitmap id="EmojiSteps" filename="emoji/steps.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="EmojiBell" filename="emoji/bell.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="EmojiDrop" filename="emoji/drop.png"><palette><color>FFFFFF</color></palette></bitmap>
+    <bitmap id="EmojiSnow" filename="emoji/snow.png"><palette><color>FFFFFF</color></palette></bitmap>
+</drawables>

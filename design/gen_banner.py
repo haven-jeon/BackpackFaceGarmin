@@ -1,7 +1,8 @@
 """파타고라니 오마주 배너 생성기 (1bpp).
 
 배너 = 물결 띠 하늘(흰 바탕) + 뾰족한 산맥(검정) + 봉우리 위 고라니. 시각 숫자는 흰 슬랩 세리프로 산 위에 얹는다.
-화면 크기별(TARGETS)로 따로 만든다: 176 = Instinct 3 Solar, 280 = Fenix 7X (1.5배).
+화면 크기별(TARGETS)로 따로 만든다: 176 = Instinct 3 Solar, 280 = Fenix 7X (1.5배), 454 = Forerunner 970 (2.4배).
+AMOLED 화면(AOD=True)은 저전력 화면용 속 빈 숫자·능선 윤곽선도 만든다.
 
   python gen_banner.py preview   → previews/banner_options.png (숫자 서체 비교, 176)
   python gen_banner.py export    → ../InstinctFace/resources-<화면>/ 에 배너·고라니·시각 숫자 비트맵,
@@ -25,9 +26,12 @@ PROJ = HERE.parent / "InstinctFace"
 #   280: 둥근 화면이라 배너 네 모서리가 화면 안에 들도록 가운데로 내리고, 서브스크린 원(196,62 r40) 아래에 둔다.
 # BEZEL = 고라니가 들어가면 안 되는 서브스크린 원 (중심 x, y, 반경)
 # TEXT_BOTTOM = 이 x보다 왼쪽은 좌상단 글자 줄이 이 y까지 내려온다
+#   454: 280 배치를 화면 크기 비율(약 1.62배)로 옮겼다. 서브스크린 원은 (318,100 r65)
+# AOD = 저전력 화면(번인 보호)용 비트맵을 만들지 (AMOLED)
 TARGETS = {
-    "176": dict(S=1.0, BX=8, BY=72, BW=160, BH=60, DIGIT_H=32, BEZEL=(144, 31, 41), TEXT_BOTTOM=(110, 64)),
-    "280": dict(S=1.5, BX=20, BY=106, BW=240, BH=90, DIGIT_H=48, BEZEL=(196, 62, 44), TEXT_BOTTOM=(152, 93)),
+    "176": dict(S=1.0, BX=8, BY=72, BW=160, BH=60, DIGIT_H=32, BEZEL=(144, 31, 41), TEXT_BOTTOM=(110, 64), AOD=False),
+    "280": dict(S=1.5, BX=20, BY=106, BW=240, BH=90, DIGIT_H=48, BEZEL=(196, 62, 44), TEXT_BOTTOM=(152, 93), AOD=False),
+    "454": dict(S=2.4, BX=35, BY=172, BW=384, BH=144, DIGIT_H=77, BEZEL=(318, 100, 70), TEXT_BOTTOM=(245, 152), AOD=True),
 }
 
 
@@ -339,6 +343,93 @@ def banner_with_border():
     return m
 
 
+# ---------------- 저전력 화면 (AMOLED 번인 보호) ----------------
+# 켜진 픽셀이 화면의 10%를 넘으면 시계가 화면을 끈다. 숫자는 속을 비운 윤곽선, 산은 능선 한 줄만 남긴다.
+
+def outline(mask, w):
+    """마스크의 바깥 테두리 w px만 남긴다."""
+    inner = mask.copy()
+    for _ in range(w):
+        p = np.pad(inner, 1)
+        inner = p[1:-1, 1:-1] & p[:-2, 1:-1] & p[2:, 1:-1] & p[1:-1, :-2] & p[1:-1, 2:]
+    return mask & ~inner
+
+
+def export_aod(res, glyph, save_1bpp):
+    adir = res / "drawables" / "aod"
+    adir.mkdir(exist_ok=True)
+    pal = '<palette><color>FFFFFF</color></palette>'     # 흰 선, 나머지 투명
+
+    def save_line(mask, path):
+        px = np.zeros(mask.shape + (4,), np.uint8)
+        px[mask] = (255, 255, 255, 255)
+        Image.fromarray(px).save(path)
+
+    xml = ["<drawables>"]
+    for ch in "0123456789:":
+        name = "colon" if ch == ":" else f"d{ch}"
+        save_line(outline(glyph[ch], LINE), adir / f"{name}.png")
+        rid = "AodColon" if ch == ":" else f"AodD{ch}"
+        xml.append(f'    <bitmap id="{rid}" filename="aod/{name}.png">{pal}</bitmap>')
+    # 능선: 배너 산맥 꼭대기 선 (LINE px 두께), 배너와 같은 자리
+    r = ridge_y()
+    ridge = np.zeros((r.max() + LINE + 1, BW), bool)
+    for x in range(BW):
+        lo = min(r[x], r[max(x - 1, 0)], r[min(x + 1, BW - 1)])   # 가파른 곳도 끊기지 않게 이웃과 이어 그린다
+        ridge[lo:r[x] + LINE, x] = True
+    top = int(ridge.any(1).argmax())
+    ridge = ridge[top:]
+    save_line(ridge, adir / "ridge.png")
+    xml.append(f'    <bitmap id="AodRidge" filename="aod/ridge.png">{pal}</bitmap>')
+    xml.append("</drawables>")
+    (res / "drawables" / "aod.xml").write_text("\n".join(xml) + "\n")
+    lit = sum(outline(glyph[c], LINE).sum() for c in "0000:") + ridge.sum()
+    print(f"[{TARGET}] AOD: 숫자 4개+콜론+능선 켜진 픽셀 약 {lit} (화면의 {lit / (np.pi * (BX + BW / 2) ** 2) * 100:.1f}%)")
+    return dict(ridge_x=BX, ridge_y=BY + top)
+
+
+def aod_consts(aod):
+    if aod is None:
+        return ("    const HAS_AOD = false;    // 저전력 화면 비트맵 없음 (MIP 화면)\n"
+                "    const AOD_RIDGE_X = 0;\n    const AOD_RIDGE_Y = 0;\n")
+    return (f"    const HAS_AOD = true;     // 저전력 화면(AMOLED): 속 빈 숫자 + 능선 윤곽선\n"
+            f"    const AOD_RIDGE_X = {aod['ridge_x']};\n"
+            f"    const AOD_RIDGE_Y = {aod['ridge_y']};\n")
+
+
+def aod_funcs(aod):
+    if aod is None:
+        return """
+    // 저전력 화면 비트맵이 없는 화면 (HAS_AOD = false 이면 불리지 않는다)
+    function aodDigitIds() as Array<ResourceId> {
+        return [];
+    }
+
+    function aodColonId() as ResourceId or Null {
+        return null;
+    }
+
+    function aodRidgeId() as ResourceId or Null {
+        return null;
+    }
+"""
+    ids = ", ".join(f"Rez.Drawables.AodD{d}" for d in "0123456789")
+    return f"""
+    // 저전력 화면: 숫자 0~9 윤곽선, 콜론, 능선
+    function aodDigitIds() as Array<ResourceId> {{
+        return [{ids}];
+    }}
+
+    function aodColonId() as ResourceId or Null {{
+        return Rez.Drawables.AodColon;
+    }}
+
+    function aodRidgeId() as ResourceId or Null {{
+        return Rez.Drawables.AodRidge;
+    }}
+"""
+
+
 def export():
     res = PROJ / f"resources-{TARGET}"
     (res / "drawables" / "banner").mkdir(parents=True, exist_ok=True)
@@ -396,6 +487,7 @@ def export():
     (res / "drawables" / "time.xml").write_text("\n".join(xml) + "\n")
     ids = ",\n            ".join(
         "[" + ", ".join(f"Rez.Drawables.T{p}_{d}" for d in "0123456789") + "]" for p in range(4))
+    aod = export_aod(res, glyph, save_1bpp) if AOD else None
 
     # 화면 배치 상수
     def spot_rows(side):
@@ -421,7 +513,7 @@ module Banner {{
     const DIGIT_W = {total_w};    // 시각 줄 전체 폭
     const DIGIT_XS = [{", ".join(map(str, digit_x))}];   // 숫자 자리 0~3의 x 오프셋
     const COLON_X = {slot_x[2]};
-
+{aod_consts(aod)}
     function deerIds(right as Boolean) as Array<ResourceId> {{
         return right ? [{spot_ids("R")}] : [{spot_ids("L")}];
     }}
@@ -432,7 +524,7 @@ module Banner {{
             {ids}
         ];
     }}
-}}
+{aod_funcs(aod)}}}
 """)
     print(f"[{TARGET}] exported banner, deer spots L{len(spots['L'])}/R{len(spots['R'])}, "
           f"41 digit bitmaps ({DIGIT_MODE}), Banner.mc")

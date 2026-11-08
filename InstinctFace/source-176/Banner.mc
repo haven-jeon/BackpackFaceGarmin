@@ -15,6 +15,9 @@ module Banner {
     const DIGIT_W = 134;    // 시각 줄 전체 폭
     const DIGIT_XS = [0, 31, 74, 105];   // 숫자 자리 0~3의 x 오프셋
     const COLON_X = 62;
+    const HAS_AOD = false;    // 저전력 화면 비트맵 없음 (MIP 화면)
+    const AOD_RIDGE_X = 0;
+    const AOD_RIDGE_Y = 0;
 
     function deerIds(right as Boolean) as Array<ResourceId> {
         return right ? [Rez.Drawables.DeerR0, Rez.Drawables.DeerR1, Rez.Drawables.DeerR2, Rez.Drawables.DeerR3, Rez.Drawables.DeerR4, Rez.Drawables.DeerR5, Rez.Drawables.DeerR6, Rez.Drawables.DeerR7, Rez.Drawables.DeerR8] : [Rez.Drawables.DeerL0, Rez.Drawables.DeerL1, Rez.Drawables.DeerL2, Rez.Drawables.DeerL3, Rez.Drawables.DeerL4, Rez.Drawables.DeerL5, Rez.Drawables.DeerL6, Rez.Drawables.DeerL7, Rez.Drawables.DeerL8, Rez.Drawables.DeerL9];
@@ -28,5 +31,18 @@ module Banner {
             [Rez.Drawables.T2_0, Rez.Drawables.T2_1, Rez.Drawables.T2_2, Rez.Drawables.T2_3, Rez.Drawables.T2_4, Rez.Drawables.T2_5, Rez.Drawables.T2_6, Rez.Drawables.T2_7, Rez.Drawables.T2_8, Rez.Drawables.T2_9],
             [Rez.Drawables.T3_0, Rez.Drawables.T3_1, Rez.Drawables.T3_2, Rez.Drawables.T3_3, Rez.Drawables.T3_4, Rez.Drawables.T3_5, Rez.Drawables.T3_6, Rez.Drawables.T3_7, Rez.Drawables.T3_8, Rez.Drawables.T3_9]
         ];
+    }
+
+    // 저전력 화면 비트맵이 없는 화면 (HAS_AOD = false 이면 불리지 않는다)
+    function aodDigitIds() as Array<ResourceId> {
+        return [];
+    }
+
+    function aodColonId() as ResourceId or Null {
+        return null;
+    }
+
+    function aodRidgeId() as ResourceId or Null {
+        return null;
     }
 }

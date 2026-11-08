@@ -9,8 +9,11 @@
 |---|---|---|---|---|
 | 176 | Instinct 3 Solar | `resources-176/`, `source-176/` | 갈무리11 Bold 12px | 12px |
 | 280 | Fenix 7X | `resources-280/`, `source-280/` | 갈무리14 15px (가로 1px 굵게) | 15px |
+| 454 | Forerunner 970 | `resources-454/`, `source-454/` | 갈무리11 Bold 12px → 정수 2배 24px | 12px → 2배 |
 
-배너·시각 숫자는 280에서 176의 1.5배로 다시 그린다 (확대가 아니라 같은 모양을 큰 해상도로 렌더링).
+배너·시각 숫자는 280에서 176의 1.5배, 454에서 2.4배로 다시 그린다 (확대가 아니라 같은 모양을 큰 해상도로 렌더링).
+AMOLED인 454는 저전력 화면용 비트맵(`drawables/aod/`: 속 빈 숫자 0~9·콜론, 능선 한 줄)도 만든다.
+`gen_banner.py export`가 켜진 픽셀 비율을 출력하니 10%를 넘지 않는지 확인한다.
 `source-<화면>/Layout.mc`(글자·칸·서브스크린 좌표)는 손으로 쓰고, `Banner.mc`는 `gen_banner.py`가 만든다.
 
 ```sh

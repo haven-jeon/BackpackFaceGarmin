@@ -11,11 +11,12 @@ import Toybox.Time.Gregorian;
 import Toybox.WatchUi;
 
 // 백패킹용 워치 페이스. 그림은 Instinct 3 Solar (176x176 1bpp, 우상단 서브스크린 113,0,62x62) 기준이고,
-// Fenix 7X (280x280 원형)는 같은 구성을 1.5배로 키워 서브스크린 자리에 원을 직접 그린다.
-// 화면별 좌표는 source-176/, source-280/ 의 Layout.mc(손으로 씀)와 Banner.mc(design/gen_banner.py가 생성)
+// Fenix 7X (280x280 원형)·Forerunner 970 (454x454 원형 AMOLED)은 같은 구성을 키워 서브스크린 자리에 원을 직접 그린다.
+// AMOLED는 저전력 모드에서 윤곽선만 남긴 화면을 따로 그린다 (drawAod).
+// 화면별 좌표는 source-176/, source-280/, source-454/ 의 Layout.mc(손으로 씀)와 Banner.mc(design/gen_banner.py가 생성)
 //
 //  ┌──────────────┬─(sub)─┐
-//  │ 10월 27일 화  │ 2:10  │  ← 일몰(밤이면 일출)까지 남은 시간, 링 = 지금 태양광 충전 세기
+//  │ 10월 27일 화  │ 2:10  │  ← 일몰(밤이면 일출)까지 남은 시간, 링 = 태양광 충전 세기 (센서 없으면 남은 낮/밤)
 //  │  [top1]      │ 일몰  │
 //  │  [top2]      └───────┘  ← 정보 칸 3개 (기본: 일출·일몰 / 오늘 기온 범위 / 지명)
 //  │  [top3]                │
@@ -31,6 +32,7 @@ import Toybox.WatchUi;
 class InstinctFaceView extends WatchUi.WatchFace {
 
     hidden var _sub = null;          // 서브스크린 영역 (없는 기기면 null)
+    hidden var _sleep = false;       // 저전력 모드 (손목을 내림)
     hidden var _solarDrawn = -1;     // 서브스크린 링에 마지막으로 그린 태양광 세기
     const SOLAR_STEP = 5;            // 링을 다시 그릴 태양광 세기 변화 (%p)
     hidden var _slots as Array<Number> = Slots.DEFAULTS;   // 칸마다 보일 정보 (Slots.mc, 폰 설정)
@@ -82,6 +84,17 @@ class InstinctFaceView extends WatchUi.WatchFace {
         _slots = Slots.load();
     }
 
+    // 손목을 내려 저전력 모드로 들어가거나 나올 때. AMOLED(Banner.HAS_AOD)는 저전력 화면을 따로 그린다
+    function onEnterSleep() as Void {
+        _sleep = true;
+        WatchUi.requestUpdate();
+    }
+
+    function onExitSleep() as Void {
+        _sleep = false;
+        WatchUi.requestUpdate();
+    }
+
     function onUpdate(dc as Dc) as Void {
         var w = dc.getWidth();
         var h = dc.getHeight();
@@ -92,6 +105,10 @@ class InstinctFaceView extends WatchUi.WatchFace {
 
         var now = Time.now();
         var info = Gregorian.info(now, Time.FORMAT_SHORT);
+        if (_sleep && Banner.HAS_AOD) {
+            drawAod(dc, w, info);
+            return;
+        }
         updateSun(now.value(), info.day);
 
         drawTopLeft(dc, info);
@@ -106,6 +123,7 @@ class InstinctFaceView extends WatchUi.WatchFace {
     // 여기서 값을 확인하고, 그린 값과 SOLAR_STEP 이상 차이 날 때만 서브스크린을 다시 그린다.
     // 해를 향하면 링이 바로 반응하고, 값이 조금씩 출렁일 때는 그리지 않는다 (onUpdate는 절전 중 1분에 한 번뿐)
     function onPartialUpdate(dc as Dc) as Void {
+        if (!hasSolar()) { return; }   // 남은 낮/밤 링은 1분에 한 번 onUpdate로 충분하다
         var s = solarNow();
         var diff = s - _solarDrawn;
         if (diff.abs() < SOLAR_STEP && !(s == 0 && _solarDrawn > 0)) { return; }
@@ -125,6 +143,12 @@ class InstinctFaceView extends WatchUi.WatchFace {
         return [Layout.SUB_CX - r, Layout.SUB_CY - r, 2 * r + 1, 2 * r + 1];
     }
 
+    // 태양광 충전 센서가 있는 기기인지 (Forerunner 970 등은 없다)
+    hidden function hasSolar() as Boolean {
+        var stats = System.getSystemStats();
+        return (stats has :solarIntensity) && stats.solarIntensity != null;
+    }
+
     // 지금 태양광 충전 세기 0~100 (지원하지 않는 기기면 0)
     hidden function solarNow() as Number {
         var stats = System.getSystemStats();
@@ -136,10 +160,7 @@ class InstinctFaceView extends WatchUi.WatchFace {
     // ---- 좌상단: 날짜 + 정보 칸 3개 (top1~3) ----
     hidden function drawTopLeft(dc as Dc, info as Gregorian.Info) as Void {
         // FORMAT_SHORT: month 1~12, day_of_week 1(일)~7(토)
-        var week = ["일", "월", "화", "수", "목", "금", "토"];
-        dc.drawText(Layout.DATE_X, Layout.DATE_Y, _kor,
-            Lang.format("$1$월 $2$일 $3$", [info.month, info.day, week[(info.day_of_week as Number) - 1]]),
-            Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawText(Layout.DATE_X, Layout.DATE_Y, _kor, dateText(info), Graphics.TEXT_JUSTIFY_CENTER);
         // 셋째 줄 아래로는 배너 위로 튀어나온 고라니 머리가 있어 더 내릴 수 없다
         for (var i = 0; i < 3; i++) {
             Slots.draw(dc, _kor, _slots[i], Layout.TOP_X, Layout.TOP_Y + Layout.TOP_DY * i, [_rise, _set]);
@@ -163,24 +184,31 @@ class InstinctFaceView extends WatchUi.WatchFace {
         }
 
         // 둘레 바: 지금 태양광 충전 세기 (0~100%). 12시 방향에서 시계 방향으로, 실내·밤에는 비어 있다
-        dc.setPenWidth(1);
+        // 태양광 센서가 없는 기기는 남은 낮(밤)의 비율 (가운데 숫자와 같은 뜻)
+        var valid = from != null && to != null && to > from;
+        dc.setPenWidth(Layout.SUB_PEN);
         dc.drawCircle(cx, cy, r);
-        var solar = solarNow();
-        _solarDrawn = solar;
-        if (solar > 0) {
-            var frac = solar / 100.0;
-            dc.setPenWidth(4);
-            dc.drawArc(cx, cy, r - 3, Graphics.ARC_CLOCKWISE, 90, frac >= 1.0 ? 90.01 : 90 - 360 * frac);
-            dc.setPenWidth(1);
+        var frac = 0.0;
+        if (hasSolar()) {
+            var solar = solarNow();
+            _solarDrawn = solar;
+            frac = solar / 100.0;
+        } else if (valid) {
+            frac = (to - now).toFloat() / (to - from);
         }
+        if (frac > 0.0) {
+            dc.setPenWidth(Layout.RING_W);
+            dc.drawArc(cx, cy, r - Layout.RING_W / 2 - 1, Graphics.ARC_CLOCKWISE, 90, frac >= 1.0 ? 90.01 : 90 - 360 * frac);
+        }
+        dc.setPenWidth(1);
 
-        if (from != null && to != null && to > from) {
+        if (valid) {
             var left = (to - now) / 60;
-            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Graphics.FONT_MEDIUM,
+            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Layout.SUB_FONT,
                 Lang.format("$1$:$2$", [left / 60, (left % 60).format("%02d")]),
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         } else {
-            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Graphics.FONT_MEDIUM, "--:--",
+            dc.drawText(cx, cy + Layout.SUB_TIME_DY, Layout.SUB_FONT, "--:--",
                 Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
         }
         // 아이콘은 9px로 작아 텐트처럼 보여서 글자로. 링 안쪽이 아래로 갈수록 좁아 숫자 바로 밑에 둔다
@@ -251,18 +279,51 @@ class InstinctFaceView extends WatchUi.WatchFace {
 
     // ---- 시각: 산 위에 흰 슬랩 세리프, 숫자 안에 산그리메 (design/gen_banner.py 로 생성한 자리별 비트맵) ----
     hidden function drawTime(dc as Dc, w as Number) as Void {
+        var x0 = w / 2 - Banner.DIGIT_W / 2;
+        var digits = clockDigits();
+        for (var i = 0; i < 4; i++) {
+            dc.drawBitmap(x0 + Banner.DIGIT_XS[i], Banner.DIGIT_Y, glyph(i, digits[i]));
+        }
+        dc.drawBitmap(x0 + Banner.COLON_X, Banner.DIGIT_Y, _colon);
+    }
+
+    // 지금 시각 [시 십의 자리, 시 일의 자리, 분 십의 자리, 분 일의 자리] (기기 12/24시간 설정을 따른다)
+    hidden function clockDigits() as Array<Number> {
         var clock = System.getClockTime();
         var hour = clock.hour;
         if (!System.getDeviceSettings().is24Hour) {
             hour = hour % 12;
             if (hour == 0) { hour = 12; }
         }
-        var x0 = w / 2 - Banner.DIGIT_W / 2;
-        var digits = [hour / 10, hour % 10, clock.min / 10, clock.min % 10];
+        return [hour / 10, hour % 10, clock.min / 10, clock.min % 10];
+    }
+
+    // "11월 3일 화". FORMAT_SHORT: month 1~12, day_of_week 1(일)~7(토)
+    hidden function dateText(info as Gregorian.Info) as String {
+        var week = ["일", "월", "화", "수", "목", "금", "토"];
+        return Lang.format("$1$월 $2$일 $3$", [info.month, info.day, week[(info.day_of_week as Number) - 1]]);
+    }
+
+    // ---- 저전력 화면 (AMOLED): 날짜 + 능선 한 줄 + 속 빈 시각 숫자 ----
+    // 켜진 픽셀이 화면의 10%를 넘으면 시계가 화면을 끄므로 윤곽선만 그린다 (약 3%).
+    // 같은 픽셀이 오래 켜져 있지 않도록 1분마다 네 자리를 돌아가며 옮긴다 (번인 방지)
+    hidden function drawAod(dc as Dc, w as Number, info as Gregorian.Info) as Void {
+        var o = [[0, -3], [4, 0], [0, 3], [-4, 0]][System.getClockTime().min % 4];
+        var dx = o[0];
+        var dy = o[1];
+        dc.drawText(w / 2 + dx, Layout.AOD_DATE_Y + dy, _kor, dateText(info), Graphics.TEXT_JUSTIFY_CENTER);
+        dc.drawBitmap(Banner.AOD_RIDGE_X + dx, Banner.AOD_RIDGE_Y + dy,
+            WatchUi.loadResource(Banner.aodRidgeId() as ResourceId) as WatchUi.BitmapResource);
+        // 1분에 한 번만 그리므로 비트맵은 들고 있지 않고 그때그때 읽는다
+        var ids = Banner.aodDigitIds();
+        var digits = clockDigits();
+        var x0 = w / 2 - Banner.DIGIT_W / 2 + dx;
         for (var i = 0; i < 4; i++) {
-            dc.drawBitmap(x0 + Banner.DIGIT_XS[i], Banner.DIGIT_Y, glyph(i, digits[i]));
+            dc.drawBitmap(x0 + Banner.DIGIT_XS[i], Banner.DIGIT_Y + dy,
+                WatchUi.loadResource(ids[digits[i]]) as WatchUi.BitmapResource);
         }
-        dc.drawBitmap(x0 + Banner.COLON_X, Banner.DIGIT_Y, _colon);
+        dc.drawBitmap(x0 + Banner.COLON_X, Banner.DIGIT_Y + dy,
+            WatchUi.loadResource(Banner.aodColonId() as ResourceId) as WatchUi.BitmapResource);
     }
 
     // 자리마다 지금 보이는 숫자 비트맵 하나만 들고 있다가 숫자가 바뀔 때만 새로 읽는다

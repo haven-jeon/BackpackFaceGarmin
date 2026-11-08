@@ -1,3 +1,4 @@
+import Toybox.Graphics;
 import Toybox.Lang;
 
 // 화면 배치 상수: Instinct 3 Solar (176x176 반팔각형, 우상단 서브스크린 113,0,62x62)
@@ -15,8 +16,11 @@ module Layout {
     const SUB_CX = 144;
     const SUB_CY = 32;
     const SUB_R = 29;
+    const SUB_FONT = Graphics.FONT_MEDIUM;
     const SUB_TIME_DY = -9;      // 남은 시간 글자 세로 중심 (원 중심 기준)
     const SUB_LABEL_DY = 3;      // "일출"/"일몰" 윗변
+    const SUB_PEN = 1;           // 원 테두리 두께
+    const RING_W = 4;            // 둘레 링(태양광 세기 또는 남은 낮/밤) 두께
 
     // 배너 안 해 반지름 (바깥 흰 원, 안쪽 검정 원), 고라니가 해에서 떨어져 설 최소 x 거리
     const SUN_R = 4;
@@ -42,4 +46,6 @@ module Layout {
     const SOLAR_DX = 8;          // 배터리 글자 뒤 태양광 해 중심까지
     const SOLAR_W = 14;
     const BARO_TEXT_DX = 18;     // 날씨 전망 아이콘 왼쪽에서 글자까지
+
+    const AOD_DATE_Y = 0;        // 저전력 화면 없음 (MIP 화면, Banner.HAS_AOD = false)
 }
